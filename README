@@ -21,3 +21,19 @@ C1 10 00 00: -8.5 (float).
 01: > (vertailuoperaattori).
 02 58: 600 sekuntia (lähetysväli).
 05 00 00 00: 5 sekuntia (sensorin lukuväli).
+
+
+i2c2-sda - 18
+i2c2-scl - 16
+i2c1-sda - 14
+i2c1-scl - 12
+1-wire   - 10
+GND      - 2, 20
+GPIO1    - 6
+GPIO2    - 4
+
+LED G - 8  (2x5 header)
+LED B - 6   -"-
+LED G - 4   -"-
+3.3VCC- 9
+GND -   1
