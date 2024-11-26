@@ -17,6 +17,49 @@
 SDP_Controller sdp_controller;
 
 uint8_t data[LORA_DATA_SIZE];
+float alertThreshold = 0.0;
+char comparisonOperator = '>';
+uint16_t transmissionInterval = 10; // Minuutteina, oletusarvo 10
+
+// Alaslinkin käsittelijä
+void onDownlinkMessage(uint8_t *payload, uint8_t length) {
+    if (length < 6) {
+        Serial2.println("Virhe: alaslinkkiviesti on liian lyhyt!");
+        return;
+    }
+
+    // Puretaan tiedot alaslinkistä:
+    // [0-3]: Hälytysraja (float, IEEE 754 -muodossa)
+    // [4]: Vertailuoperaattori (1 = '>', 2 = '<')
+    // [5-6]: Lähetyssykli (uint16_t, minuutteina)
+
+    // Hälytysraja
+    memcpy(&alertThreshold, payload, sizeof(float));
+
+    // Vertailuoperaattori
+    if (payload[4] == 1) {
+        comparisonOperator = '>';
+    } else if (payload[4] == 2) {
+        comparisonOperator = '<';
+    } else {
+        Serial2.println("Virhe: tuntematon vertailuoperaattori!");
+        return;
+    }
+
+    // Lähetyssykli
+    transmissionInterval = (payload[5] << 8) | payload[6];
+
+    // Tulostetaan päivitykset
+    Serial2.println("Alaslinkki vastaanotettu:");
+    Serial2.print("  Hälytysraja: ");
+    Serial2.println(alertThreshold);
+    Serial2.print("  Vertailuoperaattori: ");
+    Serial2.println(comparisonOperator);
+    Serial2.print("  Lähetyssykli: ");
+    Serial2.print(transmissionInterval);
+    Serial2.println(" minuuttia");
+}
+
 
 void setup()
 {

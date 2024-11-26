@@ -1,1 +1,23 @@
 * Lorawan device for pressure difference measurements
+
+
+Alaslinkin hyötykuormaesimerkki
+Esimerkkiasetukset:
+
+Lähetysväli: 10 minuuttia (600 sekuntia).
+Hälytysraja: -8.5.
+Vertailu: >.
+Sensorin lukuväli: 5 sekuntia.
+Payloadin muodostus:
+
+Hälytysraja (-8.5): Float-muoto, 4 tavua (IEEE 754).
+Vertailuoperaattori (>): 1 tavu (arvo 1).
+Lähetysväli (10 minuuttia): 2 tavua (600 sekuntia).
+Sensorin lukuväli (5 sekuntia): 4 tavua.
+
+C1 10 00 00 01 02 58 00 05 00 00 00
+
+C1 10 00 00: -8.5 (float).
+01: > (vertailuoperaattori).
+02 58: 600 sekuntia (lähetysväli).
+05 00 00 00: 5 sekuntia (sensorin lukuväli).
