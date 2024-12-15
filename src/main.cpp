@@ -94,7 +94,7 @@ void setup()
     double temp = sdp_controller.getTemperature();
 
     char temp_buffer[LORA_DATA_SIZE];
-
+    digitalWrite(PIN_LED1, HIGH);
     snprintf(temp_buffer, LORA_DATA_SIZE, "%f;%f", press, temp);
     Serial2.println(temp_buffer);
     memcpy(data, temp_buffer, LORA_DATA_SIZE);
@@ -103,6 +103,18 @@ void setup()
     Serial2.println((char *)data);
     setLoraData(data);
     sendLora();
+    digitalWrite(PIN_LED1, LOW);
+    delay(5000);
+    digitalWrite(PIN_LED2, LOW);
+    delay(5000);
+    digitalWrite(PIN_LED3, LOW);
+    delay(5000);
+    digitalWrite(PIN_LED1, HIGH);
+    delay(5000);
+    digitalWrite(PIN_LED2, HIGH);
+    delay(5000);
+    digitalWrite(PIN_LED3, HIGH);
+    delay(5000);
 }
 
 void loop()
