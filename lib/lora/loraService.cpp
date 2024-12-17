@@ -19,7 +19,7 @@ uint64_t u64DeviceID = *((uint64_t *)NRF_FICR->DEVICEID);
 /**LORA SETTINGS*/
 // static const u1_t PROGMEM DEVEUI[8] = {byte(u64DeviceID >> 56), byte(u64DeviceID >> 48), byte(u64DeviceID >> 40), byte(u64DeviceID >> 32), byte(u64DeviceID >> 24), byte(u64DeviceID >> 16), byte(u64DeviceID >> 8), byte(u64DeviceID)};
 // static const u1_t PROGMEM DEVEUI[8] = {0x9E, 0xB0, 0xAF, 0x1F, 0x3E, 0xBD, 0xD0, 0xAB};
-static const u1_t PROGMEM DEVEUI[8] = {0xAB, 0xD0, 0xBD, 0x3E, 0x1F, 0xAF, 0xB0, 0x9E};
+static const u1_t PROGMEM DEVEUI[8] = {0xAD, 0xD0, 0xBD, 0x3E, 0x1F, 0xAF, 0xB0, 0x9E};
 void os_getDevEui(u1_t *buf) { memcpy_P(buf, DEVEUI, 8); }
 
 // static const u1_t PROGMEM APPEUI[8] = {0xFF, 0xB3, 0xFF, 0x7E, 0xFF, 0x05, 0xFF, 0xBB};

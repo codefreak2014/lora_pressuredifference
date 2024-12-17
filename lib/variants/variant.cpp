@@ -22,7 +22,6 @@
 #include "wiring_constants.h"
 #include "wiring_digital.h"
 #include "nrf.h"
-
 const uint32_t g_ADigitalPinMap[] =
     {
         // D0 .. D31

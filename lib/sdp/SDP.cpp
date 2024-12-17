@@ -19,10 +19,10 @@ void SDP_Controller::getAddress(void)
   byte error, address; // Start Scanning i2C Address
   int nDevices;
   delay(2000);
-  Serial2.println();
-  Serial2.println("14CORE | i2C Scanner");
+  //Serial2.println();
+  //Serial2.println("14CORE | i2C Scanner");
   // delay(2000);
-  Serial2.println("Scanning...");
+  //Serial2.println("Scanning...");
   nDevices = 0;
   for (address = 1; address < 127; address++)
   {
@@ -31,11 +31,11 @@ void SDP_Controller::getAddress(void)
 
     if (error == 0)
     {
-      Serial2.println("Default SDP address = 0x25");
-      Serial2.println("I2C device found at address 0x");
+      //Serial2.println("Default SDP address = 0x25");
+      //Serial2.println("I2C device found at address 0x");
       if (address < 16)
-        Serial2.println("0");
-      // Serial2.println(address,HEX);
+        //Serial2.println("0");
+        //Serial2.println(address,HEX);
       getProductId();
 
       switch (productId[2])
@@ -43,44 +43,44 @@ void SDP_Controller::getAddress(void)
       case 0x01:
         if (productId[3] == 0x86)
         {
-          Serial2.println("Sensor found: ");
-          Serial2.println("SDP800 - 500Pa");
+          //Serial2.println("Sensor found: ");
+          //Serial2.println("SDP800 - 500Pa");
           this->scaleFactorDiffPressure = 60; // as default
         }
         else
         {
-          Serial2.println("Sensor found: ");
-          Serial2.println("SDP31 (500Pa)");
+          //Serial2.println("Sensor found: ");
+          //Serial2.println("SDP31 (500Pa)");
           this->scaleFactorDiffPressure = 60;
         }
         break;
       case 0x0A:
-        Serial2.println("Sensor found: ");
-        Serial2.println("SDP810 - 500Pa");
+        //Serial2.println("Sensor found: ");
+        //Serial2.println("SDP810 - 500Pa");
         this->scaleFactorDiffPressure = 60;
         break;
       case 0x02:
         if (productId[3] == 0x86)
         {
-          Serial2.println("Sensor found: ");
-          Serial2.println("SDP800 - 125Pa");
+          //Serial2.println("Sensor found: ");
+          //Serial2.println("SDP800 - 125Pa");
           this->scaleFactorDiffPressure = 240;
         }
         else
         {
-          Serial2.println("Sensor found: ");
-          Serial2.println("SDP32 (125Pa)");
+          //Serial2.println("Sensor found: ");
+          //Serial2.println("SDP32 (125Pa)");
           this->scaleFactorDiffPressure = 240;
         }
         break;
       case 0x0B:
-        Serial2.println("Sensor found: ");
-        Serial2.println("SDP810 - 125Pa");
+        //Serial2.println("Sensor found: ");
+        //Serial2.println("SDP810 - 125Pa");
         this->scaleFactorDiffPressure = 240;
         break;
       default:
-        Serial2.println("Product ID: does not match with the known variants of the sensor");
-        Serial2.println();
+        //Serial2.println("Product ID: does not match with the known variants of the sensor");
+        //Serial2.println();
         this->scaleFactorDiffPressure = 60;
         break;
       }
@@ -88,8 +88,8 @@ void SDP_Controller::getAddress(void)
     }
     else if (error == 4)
     {
-      Serial2.println("Default SDP address = 0x25"); // See the product manual
-      Serial2.println("Unknown error at address 0x");
+      //Serial2.println("Default SDP address = 0x25"); // See the product manual
+      //Serial2.println("Unknown error at address 0x");
       if (address < 16)
         Serial2.println("0");
       // Serial2.println(address,HEX);
@@ -97,12 +97,12 @@ void SDP_Controller::getAddress(void)
   }
   if (nDevices == 0)
   {
-    Serial2.println("Error No I2C devices found\n");
+    //Serial2.println("Error No I2C devices found\n");
     delay(5000);
   }
   else
   {
-    Serial2.println("Done\n");
+    //Serial2.println("Done\n");
     delay(5000);
   }
 }
@@ -349,7 +349,7 @@ float SDP_Controller::getDiffPressure(void)
   else
   {
     return 0;
-    Serial2.println("getDiffPressure() failed");
+    //Serial2.println("getDiffPressure() failed");
   }
 }
 /*
@@ -366,7 +366,7 @@ float SDP_Controller::getDiffPressure(float atmPressure)
   else
   {
     return 0;
-    Serial2.println("getDiffPressure(atmPressure) failed");
+    //Serial2.println("getDiffPressure(atmPressure) failed");
   }
 }
 /*
@@ -493,23 +493,23 @@ Error SDP_Controller::setError(uint8_t errorByte)
     break;
   case 1:
     error = ERROR_DATA;
-    Serial2.println("ERROR_DATA");
+    //Serial2.println("ERROR_DATA");
     break;
   case 2:
     error = ERROR_NACK_ADDRESS;
-    Serial2.println("ERROR_NACK_ADDRESS");
+    //Serial2.println("ERROR_NACK_ADDRESS");
     break;
   case 3:
     error = ERROR_NACK_DATA;
-    Serial2.println("ERROR_NACK_DATA");
+    //Serial2.println("ERROR_NACK_DATA");
     break;
   case 4:
     error = ERROR_OTHER;
-    Serial2.println("ERROR_OTHER");
+    //Serial2.println("ERROR_OTHER");
     break;
   default:
     error = ERROR_OTHER;
-    Serial2.println("ERROR_OTHER");
+    //Serial2.println("ERROR_OTHER");
     break;
   }
   return error;
@@ -528,7 +528,7 @@ Error SDP_Controller::readSequence()
   }
   if (rxByteCount != 9 || !checkCrcRoutine(this->dataBuffer))
   {
-    Serial2.println("Error receiving i2c sequence");
+    //Serial2.println("Error receiving i2c sequence");
     return ERROR_RECEIVE;
   }
   else
