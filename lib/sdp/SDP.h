@@ -41,7 +41,7 @@
 #define B16TO8_2(data) (uint8_t)(data & 0x00FF)
 
 #ifndef DEFAULT_SDP_ADDRESS
-#define DEFAULT_SDP_ADDRESS 0x25
+#define DEFAULT_SDP_ADDRESS 0x26
 #endif
 
 // @brief -> Enumeration to configure the temperature compensation for

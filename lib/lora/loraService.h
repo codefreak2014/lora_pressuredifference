@@ -3,7 +3,7 @@
 
 #include <stdint.h>
 
-#define LORA_DATA_SIZE 5
+#define LORA_DATA_SIZE 7
 
 int initLora();
 void sendLora();

@@ -41,11 +41,12 @@ enum MessageType {
     POWER_CHANGE = 0x01, // PowerStatus muutos
     ALERT = 0x02      // Hälytystila
 };
-
+float last_send_press;
+float last_send_temp;
 float alertThreshold = 0.0;
 char comparisonOperator = '>';
-uint32_t transmissionInterval = 10 * 60 * 1000; // Annetaan minuutteina -> muunnos millisekunteihin
-int powerStatus = 1;
+uint32_t transmissionInterval = 5 * 60 * 1000; // Annetaan minuutteina -> muunnos millisekunteihin
+uint8_t powerStatus = 1;
 
 char idkey[7];
 const uint32_t ledpinarray[] = {PIN_LED1, PIN_LED2, PIN_LED3};
@@ -89,7 +90,7 @@ void onDownlinkMessage(uint8_t *payload, uint8_t length) {
     Serial2.println(" minuuttia");
 }
 
-void packPayload(uint8_t *payload, uint8_t type, float press, float temp, int powerStatus) {
+void packPayload(uint8_t *payload, uint8_t type, float press, float temp, uint8_t powerStatusIn) {
     // Sanomatyyppi
     payload[0] = type; // Ensimmäinen tavu = sanomatyyppi
     
@@ -97,19 +98,17 @@ void packPayload(uint8_t *payload, uint8_t type, float press, float temp, int po
     int16_t press_scaled = (int16_t)(press * 100); // Kerrotaan 100:lla tarkkuuden säilyttämiseksi
     
     // Skaalataan lämpötila välille [-50 ... 85], pakataan int8_t-muotoon
-    int8_t temp_scaled = (int8_t)(temp * 2); // Kerrotaan 2:lla tarkkuuden säilyttämiseksi
-
-    // Tehotilan tallennus 8-bittiseen muotoon
-    uint8_t power_scaled = (uint8_t)powerStatus;
+    int16_t temp_scaled = (int16_t)(temp * 10); // Kerrotaan 10:llä tarkkuuden säilyttämiseksi
 
     // Rakennetaan payload
     payload[1] = press_scaled >> 8;   // Paineen MSB
     payload[2] = press_scaled & 0xFF; // Paineen LSB
-    payload[3] = temp_scaled;         // Lämpötila
-    payload[4] = power_scaled;        // Tehotila
+    payload[3] = temp_scaled >> 8;    // Lämpötilan MSB
+    payload[4] = temp_scaled & 0xFF;  // Lämpötilan LSB
+    payload[5] = powerStatusIn;        // Tehotila
 }
 
-void oledDisplay(int csq, char toprow[], char text[], int valueTextSize, int externalPower) {
+void oledDisplay(int csq, char toprow[], char text[], int valueTextSize, uint8_t externalPower) {
   char connection_strength[6];
   char idkeyinfo[30];
   sprintf( connection_strength, "s:%d",csq);
@@ -161,6 +160,8 @@ void setup()
     // Relay control pins
     pinMode(PIN_RELAY1, OUTPUT);
     pinMode(PIN_RELAY2, OUTPUT);
+    digitalWrite(PIN_RELAY1,  LOW);
+    digitalWrite(PIN_RELAY2,  LOW);
     pinMode(PIN_PWR_STATUS, INPUT);
 
     Wire.begin();
@@ -171,14 +172,14 @@ void setup()
     display.clearDisplay();
     sprintf( display_header, "DONE!");
     sprintf( display_data, "Display OK");
-    oledDisplay(99, display_header,display_data, 3, powerStatus);
+    oledDisplay(99, display_header,display_data, 2, powerStatus);
     digitalWrite(PIN_LED1, LOW);
     //    bluetoothInit();
     //    bluetoothStartAdv();
     digitalWrite(PIN_LED2,  HIGH);
     #ifdef USELORASEND
     sprintf( display_data, "Set LORA");
-    oledDisplay(99, display_header,display_data, 3, powerStatus);
+    oledDisplay(99, display_header,display_data, 2, powerStatus);
     if (!initLora())
     {
       sprintf( display_data, "LoRa init fail!");
@@ -202,7 +203,8 @@ void setup()
     oledDisplay(99, display_header,display_data, 1, powerStatus);
 
     packPayload(payload, 0x00, press, temp, powerStatus);
-
+    last_send_press = press;
+    last_send_temp = temp;
     //Serial2.println("Lähetetään data:");
     //Serial2.println((char *)data);
     sprintf( display_data, "Send data.");
@@ -219,7 +221,7 @@ void setup()
 void loop()
 { 
     static uint32_t lastMeasureMillis, lastSendMillis;
-    static int lastPowerStatus = 1;
+    //static uint8_t lastPowerStatus = 1;
     static int ledpin=0;
     char display_data[96];
     static char display_header[64];
@@ -238,16 +240,17 @@ void loop()
         float temp = sdp_controller.getTemperature();
         lastMeasureMillis = millis();
 
-        sprintf( display_data, "%.1f",press);
-        sprintf( display_header, "temp: %.1f", temp);
-        oledDisplay(99, display_header,display_data, 3, powerStatus);
+        sprintf( display_data, "%.1f",last_send_press);
+        sprintf( display_header, "temp: %.1f", last_send_temp);
+        oledDisplay(99, display_header,display_data, 2, powerStatus);
         if (millis() - lastSendMillis > transmissionInterval) { 
           uint8_t payload[LORA_DATA_SIZE];
-          packPayload(payload, 0x00, press, temp, powerStatus);            
+          packPayload(payload, 0x00, press, temp, powerStatus);
+          last_send_press = press;
+          last_send_temp = temp;
           setLoraData(payload);
           sendLora();
           lastSendMillis = millis();
-          lastPowerStatus = powerStatus;
         }
     }
     os_runloop_once();

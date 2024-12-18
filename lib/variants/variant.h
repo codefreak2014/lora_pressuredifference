@@ -111,8 +111,8 @@ extern "C"
  */
 #define WIRE_INTERFACES_COUNT 1
 
-#define PIN_WIRE_SDA (22)
-#define PIN_WIRE_SCL (24)
+#define PIN_WIRE_SDA (24)
+#define PIN_WIRE_SCL (22)
 
 #define PIN_WIRE_SDA2 (15)
 #define PIN_WIRE_SCL2 (13)
